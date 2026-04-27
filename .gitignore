@@ -6,3 +6,16 @@ server/.env
 *.png
 *.jpg
 *.jpeg
+# Virtual env
+menv/
+venv/
+env/
+.venv/
+server/venv/
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Env files
+.env

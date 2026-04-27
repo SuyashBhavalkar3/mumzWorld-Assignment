@@ -1,3 +1,9 @@
+# ==========================================
+# MUMZ-SHIELD AI BACKEND (FastAPI)
+# ==========================================
+# This server handles image processing and AI safety audits.
+# It uses OpenAI's Vision models to analyze product labels.
+
 import os
 import base64
 from fastapi import FastAPI, UploadFile, File, HTTPException
@@ -7,19 +13,22 @@ from dotenv import load_dotenv
 import json
 from schemas import AnalysisResponse, SafetyReport
 
-# Load environment variables
+# Load environment variables (like OPENAI_API_KEY) from .env file
 load_dotenv()
 
-app = FastAPI(title="Mumz-Shield API")
+app = FastAPI(title="Mumz-Shield Safety API")
 
-# Enable CORS for frontend
+# ---------------------------------------------------------
+# CORS SETTINGS: Allows our Next.js frontend to talk to this API
+# ---------------------------------------------------------
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["*"], # In production, replace with your frontend URL
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
+# Initialize OpenAI client
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 def encode_image(image_bytes):
@@ -27,13 +36,21 @@ def encode_image(image_bytes):
 
 @app.post("/analyze", response_model=AnalysisResponse)
 async def analyze_product(file: UploadFile = File(...)):
+    """
+    Main Endpoint: Accepts a product label image and returns a Safety Audit.
+    1. Reads the image file.
+    2. Encodes it to Base64 for OpenAI.
+    3. Prompts GPT-4o-mini to extract and analyze ingredients.
+    4. Validates the output against our SafetyReport schema.
+    """
     print(f"📥 Received analysis request for: {file.filename}")
     try:
-        # Read image
+        # Step 1: Process the image file
         contents = await file.read()
         base64_image = encode_image(contents)
 
-        # AI Call with JSON Mode (Pydantic v1 Compatible)
+        # Step 2: Request Analysis from OpenAI
+        # We use 'json_object' mode to ensure the AI speaks in structured data.
         response = client.chat.completions.create(
             model="gpt-4o-mini",
             messages=[
@@ -64,10 +81,12 @@ async def analyze_product(file: UploadFile = File(...)):
             response_format={"type": "json_object"},
         )
 
+        # Step 3: Parse and Validate the AI output
         raw_content = response.choices[0].message.content
         data = json.loads(raw_content)
         
-        # Manual validation using Pydantic v1
+        # We use manual validation here because Pydantic v2 has binary issues on some Windows setups.
+        # This approach (Pydantic v1) is the most robust for local distribution.
         analysis = SafetyReport(**data)
         
         if not analysis.is_in_scope:

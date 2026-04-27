@@ -1,3 +1,15 @@
+// ==========================================
+// MUMZ-SHIELD AI FRONTEND (Next.js)
+// ==========================================
+// This dashboard provides a professional UI for parents to
+// audit product ingredients using AI.
+//
+// KEY FEATURES:
+// 1. Bilingual Support (English/Arabic)
+// 2. Real-time AI processing logs
+// 3. Dynamic layout (Centered -> Split)
+// 4. Sticky Sidebar for easy access
+
 "use client";
 
 import { useState } from "react";
