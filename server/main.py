@@ -46,7 +46,6 @@ async def analyze_product(file: UploadFile = File(...)):
     3. Prompts GPT-4o-mini to extract and analyze ingredients.
     4. Validates the output against our SafetyReport schema.
     """
-    print(f"📥 Received analysis request for: {file.filename}")
     try:
         # Step 1: Process the image file
         contents = await file.read()

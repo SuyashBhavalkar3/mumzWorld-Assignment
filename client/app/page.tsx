@@ -49,7 +49,6 @@ export default function Home() {
       setLoadingMsg(loadingSteps[step]);
     }, 1500);
 
-    console.log("🚀 Starting AI Audit for file:", file.name);
     const formData = new FormData();
     formData.append("file", file);
 
@@ -61,9 +60,7 @@ export default function Home() {
         body: formData,
       });
 
-      console.log("📥 Response status:", response.status);
       const data = await response.json();
-      console.log("📦 Received data:", data);
       if (data.success && data.data) {
         setResult(data.data);
       } else {
