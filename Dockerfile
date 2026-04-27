@@ -1,6 +1,4 @@
 # 🐳 MASTER DOCKERFILE (For Railway/Cloud Deployment)
-# This file sits in the root so Railway can find it easily.
-
 FROM python:3.10-slim
 
 WORKDIR /app
@@ -10,14 +8,17 @@ RUN apt-get update && apt-get install -y \
     build-essential \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy requirements from the server subfolder
-COPY server/requirements.txt .
+# Copy requirements explicitly from the subfolder
+COPY ./server/requirements.txt /app/requirements.txt
 
 # Install Python dependencies
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir -r /app/requirements.txt
 
-# Copy the entire server folder content to the container
-COPY server/ .
+# Copy everything from the server folder to the /app directory
+COPY ./server/ /app/
 
-# Railway dynamic port support
+# Expose port (Documentation only, Railway uses $PORT)
+EXPOSE 8000
+
+# Start the server
 CMD ["sh", "-c", "uvicorn main:app --host 0.0.0.0 --port ${PORT:-8000}"]
