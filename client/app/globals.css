@@ -1,0 +1,28 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #e60058;
+  --color-secondary: #00b2d4;
+  --color-accent: #ffd84d;
+  --color-mumz-purple: #8a75e1;
+  --color-mumz-grey: #43454c;
+  --color-background: #f4f4f6;
+}
+
+@layer base {
+  body {
+    @apply text-mumz-grey antialiased;
+    background: linear-gradient(135deg, #e60058 0%, #8a75e1 100%);
+    background-attachment: fixed;
+    min-height: 100vh;
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+}
+
+.mumz-gradient {
+  background: linear-gradient(135deg, #e60058 0%, #8a75e1 100%);
+}
+
+.glass-card {
+  @apply bg-white/95 backdrop-blur-xl border border-white/20 shadow-[0_20px_50px_rgba(0,0,0,0.1)] rounded-[2.5rem];
+}

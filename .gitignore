@@ -1,0 +1,8 @@
+menv/
+menv
+server/.env
+*.env
+*.txt
+*.png
+*.jpg
+*.jpeg
