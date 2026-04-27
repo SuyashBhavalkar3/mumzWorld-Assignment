@@ -65,6 +65,22 @@
 - **Documentation & Evals (1h):** Formalized evaluation metrics and wrote setup documentation.
 - **Total:** 5 Hours.
 
+## 🌐 Deployment (Cloud)
+
+### 1. Backend (Railway)
+1. Connect your repo to **Railway.app**.
+2. Railway will automatically detect the `server/Dockerfile`.
+3. Add your `OPENAI_API_KEY` to the Railway **Variables** tab.
+4. Railway will give you a public URL (e.g., `https://mumz-shield.up.railway.app`).
+
+### 2. Frontend (Vercel)
+1. Connect your repo to **Vercel.com**.
+2. Set the **Root Directory** to `client`.
+3. Add an **Environment Variable**:
+   - Key: `NEXT_PUBLIC_API_URL`
+   - Value: `https://your-railway-url.com` (Your live Railway URL)
+4. Deploy!
+
 ---
 
 ## 🎨 Design Philosophy
