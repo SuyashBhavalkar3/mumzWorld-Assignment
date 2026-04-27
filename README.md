@@ -1,7 +1,6 @@
 # 🛡️ Mumz-Shield AI: Safety Sentinel
 
-> **The ultimate safety companion for Mumzworld parents.**
-> Use AI to instantly verify baby product ingredients, safety scores, and GCC compliance from a single photo.
+**Mumz-Shield is an AI-powered safety sentinel designed for Mumzworld parents to instantly audit baby product ingredients from a photo. It uses multimodal AI (GPT-4o-mini) to extract ingredient lists, cross-reference them against pediatric safety standards, and generate bilingual (EN/AR) verdicts. The system handles uncertainty by rejecting out-of-scope products and flagging blurry inputs, providing parents with 100% peace of mind in a "Medical Dashboard" UI.**
 
 ---
 
@@ -45,6 +44,26 @@
    npm run dev
    ```
    *(Dashboard runs at http://localhost:3000)*
+
+---
+
+## 📊 Evaluation & Tradeoffs
+- **[EVALS.md](./EVALS.md):** 10+ Test cases covering Safe, Caution, and Adversarial inputs.
+- **[TRADEOFFS.md](./TRADEOFFS.md):** Detailed explanation of Architecture, Model choice, and Uncertainty handling.
+
+---
+
+## 🛠️ Tooling & AI Usage
+- **Harness:** **Antigravity** (Powerful agentic assistant) for architecture scaffolding, pair-coding, and UI refinement.
+- **Models:** **GPT-4o-mini** for the production Vision engine (chosen for speed/cost) and **GPT-4o** for architectural guidance.
+- **Workflow:** Heavy pair-coding with real-time refactoring. AI was used to generate the initial FastAPI boilerplate and complex Tailwind 4 animations, while the developer (me) stepped in to solve Windows-specific Pydantic binary blocks and brand-specific CSS integrity.
+
+## ⏱️ Time Log
+- **Discovery & Scoping (1h):** Identified the "Trust-Verification Gap" and audited `mumzworld.com` for brand colors/typography.
+- **Backend & AI Pipeline (1.5h):** Built the FastAPI server, image encoding pipeline, and Pydantic validation logic.
+- **Frontend & UI (1.5h):** Developed the Next.js 16 dashboard, bilingual toggle, and sticky audit sidebar.
+- **Documentation & Evals (1h):** Formalized evaluation metrics and wrote setup documentation.
+- **Total:** 5 Hours.
 
 ---
 
