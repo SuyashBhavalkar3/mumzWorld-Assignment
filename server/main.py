@@ -19,11 +19,14 @@ load_dotenv()
 app = FastAPI(title="Mumz-Shield Safety API")
 
 # ---------------------------------------------------------
-# CORS SETTINGS: Allows our Next.js frontend to talk to this API
+# CORS SETTINGS: Trusting our specific frontend URLs
 # ---------------------------------------------------------
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"], # In production, replace with your frontend URL
+    allow_origins=[
+        "http://localhost:3000",
+        "https://mumz-world-assignment.vercel.app"
+    ],
     allow_methods=["*"],
     allow_headers=["*"],
 )
