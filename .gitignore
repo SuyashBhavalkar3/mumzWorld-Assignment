@@ -2,7 +2,11 @@ menv/
 menv
 server/.env
 *.env
-*.txt
+# Only ignore specific text files if needed, but we need requirements.txt
+!requirements.txt
+!README.md
+!EVALS.md
+!TRADEOFFS.md
 *.png
 *.jpg
 *.jpeg
