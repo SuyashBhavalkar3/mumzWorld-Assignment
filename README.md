@@ -56,23 +56,34 @@
 
 ---
 
-## 📊 Evaluation & Tradeoffs
-- **[EVALS.md](./EVALS.md):** 10+ Test cases covering Safe, Caution, and Adversarial inputs.
-- **[TRADEOFFS.md](./TRADEOFFS.md):** Detailed explanation of Architecture, Model choice, and Uncertainty handling.
+---
+
+## 📊 Technical Depth & Rigor
+- **[EVALS.md](./EVALS.md):** 10+ Test cases covering Safe, Caution, and Adversarial inputs (e.g., Pizza, Blurry, Medicine).
+- **[TRADEOFFS.md](./TRADEOFFS.md):** Detailed architectural defense (Model choice, Uncertainty handling, SQL Cache).
 
 ---
 
-## 🛠️ Tooling & AI Usage
-- **Harness:** **Antigravity** (Powerful agentic assistant) for architecture scaffolding, pair-coding, and UI refinement.
-- **Models:** **GPT-4o-mini** for the production Vision engine (chosen for speed/cost) and **GPT-4o** for architectural guidance.
-- **Workflow:** Heavy pair-coding with real-time refactoring. AI was used to generate the initial FastAPI boilerplate and complex Tailwind 4 animations, while the developer (me) stepped in to solve Windows-specific Pydantic binary blocks and brand-specific CSS integrity.
+## 🛠️ Tooling & AI Provenance (Mandatory Disclosure)
+This project was built using a high-intensity, AI-Native workflow.
 
-## ⏱️ Time Log
-- **Discovery & Scoping (1h):** Identified the "Trust-Verification Gap" and audited `mumzworld.com` for brand colors/typography.
-- **Backend & AI Pipeline (1.5h):** Built the FastAPI server, image encoding pipeline, and Pydantic validation logic.
-- **Frontend & UI (1.5h):** Developed the Next.js 16 dashboard, bilingual toggle, and sticky audit sidebar.
-- **Documentation & Evals (1h):** Formalized evaluation metrics and wrote setup documentation.
-- **Total:** 5 Hours.
+- **Primary Harness:** **Antigravity** (Advanced Coding Agent). Used for full architectural loops, UI/UX refinement, and cross-file refactors.
+- **Models Used:** 
+  - **Gemini 1.5 Pro / 2.0 Flash:** Used via Antigravity for large-scale codebase context and logic generation.
+  - **GPT-4o-mini (Vision):** The core production engine for image analysis.
+  - **GPT-4o:** Used for architectural sanity checks and bilingual copy polish.
+- **How it was used:** 
+  - **Pair-Coding:** I (the developer) steered the high-level architecture and defined the business logic (e.g., the "Safe-Swap" revenue model).
+  - **Agentic Loops:** Used Antigravity to handle repetitive tasks like CSS alignment, bilingual string mapping, and boilerplate SQLAlchemy setup.
+  - **Where I Overruled the AI:** The agent initially proposed a mirrored RTL layout for Arabic. I stepped in and forced a **"Fixed Layout"** strategy (Logo/Icons stay LTR) to maintain brand integrity, while only the internal text flows RTL.
+- **Key Prompt Strategies:** Used **System Instructions** to force "json_object" mode and strict schema adherence for multimodal extraction.
+
+## ⏱️ Time Log (Total: ~5 Hours)
+- **Phase 1: Discovery & Scoping (45m):** Audited Mumzworld.com and defined the Safety Sentinel persona.
+- **Phase 2: Core AI Pipeline (1.5h):** Built the Vision extraction, Pydantic validation, and SQLite caching layer.
+- **Phase 3: Frontend & UI (1.5h):** Developed the dashboard, bilingual toggle, and SSE streaming chat.
+- **Phase 4: Optimization & Polish (45m):** Implemented Safe-Swap recommendations and fixed layout issues.
+- **Phase 5: Evaluation & Docs (45m):** Created EVALS.md and TRADEOFFS.md and audited code clarity.
 
 ## 🌐 Deployment (Cloud)
 

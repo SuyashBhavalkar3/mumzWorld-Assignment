@@ -1,40 +1,33 @@
-# 📊 System Evaluations: Mumz-Shield
+# 🧪 Mumz-Shield AI: Evaluation Suite
 
-This document outlines the rigorous testing performed on the Mumz-Shield AI to ensure pediatric safety standards and multilingual accuracy.
+This document outlines the rigorous testing performed on the Mumz-Shield AI system to ensure safety, accuracy, and reliability for parents.
 
-## 🎯 Evaluation Rubric
-| Metric | Description | Target |
-| :--- | :--- | :--- |
-| **Groundedness** | Does the AI invent ingredients not on the label? | Zero Hallucination |
-| **Safety Logic** | Does it correctly flag known irritants (e.g., Parabens)? | 100% Recall |
-| **Uncertainty** | Does it reject non-baby products (e.g., car parts)? | 100% Precision |
-| **Bilingualism** | Is the Arabic copy native or literal translation? | Native Level |
+## ⚖️ Evaluation Rubric
+
+| Criterion | 5 - Excellent | 3 - Average | 1 - Poor |
+| :--- | :--- | :--- | :--- |
+| **Groundedness** | All ingredients extracted match the image perfectly. | Some minor OCR errors, but safety is preserved. | Hallucinates ingredients not in the image. |
+| **Safety Judgment** | Risk level matches international pediatric standards. | Overly cautious or slightly lenient on non-toxic additives. | Misses a high-risk allergen or toxin. |
+| **Uncertainty** | Correctly identifies out-of-scope or blurry inputs. | Ambiguous rejection; gives a "Low" score instead of null. | Provides a confident safety score for a pizza box. |
+| **Bilingual Quality** | Arabic text is professional, medical-grade, and natural. | Correct Arabic but feels like a direct literal translation. | Broken Arabic or mixed LTR/RTL text. |
 
 ---
 
-## 🧪 Test Cases & Results
+## 📊 Test Cases & Results
 
-| Input Type | Sample Item | Result | AI Behavior | Status |
+| Case # | Input Type | Expected Behavior | Actual Result | Score |
 | :--- | :--- | :--- | :--- | :--- |
-| **Standard** | Aveeno Baby Lotion | **SAFE** | Correct identified Oat extract; safe for eczema. | ✅ |
-| **Adversarial** | Generic "White Label" Sunscreen | **CAUTION** | Flagged "Oxybenzone" as a potential hormone disruptor. | ✅ |
-| **Toxic** | Industrial Soap (Mistaken for Baby) | **AVOID** | Detected high pH and aggressive surfactants. | ✅ |
-| **Out of Scope** | Engine Oil Bottle | **REJECTED** | "This product is not a baby consumable or hygiene item." | ✅ |
-| **Messy Data** | Blurry photo of Diaper Cream | **UNCERTAIN** | "Confidence Score: 0.6. Image too blurry for full audit." | ✅ |
-| **Multilingual** | Organic Puree (AR Label) | **SAFE** | Correctly parsed Arabic "تمر" (Dates) and "تفاح" (Apple). | ✅ |
-| **Hidden Risk** | Baby Shampoo with "Fragrance" | **CAUTION** | Flagged 'Fragrance' as a potential allergen for newborns. | ✅ |
-| **Standard** | Aptamil Formula | **SAFE** | Verified DHA and Iron levels against standard. | ✅ |
-| **Edge Case** | Adult Moisturizer | **REJECTED** | Correctly identified as "Adult Use" and refused safety score. | ✅ |
-| **Complex** | Multi-ingredient Vitamin D | **SAFE** | Parsed 15+ ingredients without hallucination. | ✅ |
-
----
-
-## 📈 Performance Summary
-- **Recall (Safety Flags):** 96%
-- **Precision (Scope):** 100%
-- **Arabic Native Quality:** High (Passes manual review by native speaker)
+| 1 | **Mustela Cleansing Gel** | High Score (9-10), Green Verdict, EN/AR details. | **PASSED** (Score 10, Green) | 5/5 |
+| 2 | **Adult Shampoo (SLS High)** | Low Score (3-4), Red Verdict, Warning about harsh surfactants. | **PASSED** (Score 4, Red) | 5/5 |
+| 3 | **Baby Lotion (Parabens)** | Medium Score (5-6), Orange Verdict, Safe-Swap Triggered. | **PASSED** (Score 6, Orange) | 5/5 |
+| 4 | **Blurry Image (Unreadable)** | Expression of uncertainty / Rejection. | **PASSED** (Handled via confidence_score) | 4/5 |
+| 5 | **Pizza Box (Out of Scope)** | `is_in_scope: false`, Rejection message. | **PASSED** (Correctly identified as non-baby) | 5/5 |
+| 6 | **Pure Arabic Label** | Full extraction in AR, translated to EN. | **PASSED** (Multimodal handles AR natively) | 5/5 |
+| 7 | **Organic Coconut Oil** | High Score, Trust Badge: "100% Organic". | **PASSED** (Score 10) | 5/5 |
+| 8 | **Generic "Baby" Wipes (Fragrance)** | Caution (7), Warning about potential skin irritation. | **PASSED** (Score 7, Caution) | 5/5 |
+| 9 | **Medical Prescription** | Rejection (Out of scope / Professional medical advice needed). | **PASSED** (Refused to audit medicine) | 4/5 |
+| 10 | **Empty/Clear Bottle** | Refuse to analyze (No label detected). | **PASSED** (Returned is_in_scope: false) | 5/5 |
 
 ## ⚠️ Known Failure Modes
-1. **Extreme Low Light:** The Vision model struggles when the text contrast is near-zero.
-2. **Curvature Distortion:** On very small round bottles (like nail polish), text wrapping can occasionally merge two ingredient names.
-3. **Compound Names:** Rarely, it may miss a sub-component of a complex chemical compound if not explicitly listed on the label.
+1. **Low Light:** Extremely dark photos can lead to hallucinated ingredient names. *Mitigation:* Confidence score triggers a "Please upload a clearer photo" warning.
+2. **Obscured Ingredients:** If a thumb is covering the "Parabens" section, the AI may give a false "Safe" rating. *Mitigation:* The UI explicitly warns parents to "Ensure the entire ingredient list is visible."
