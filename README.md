@@ -110,7 +110,7 @@ Mumzworld serves millions of parents who deal with high anxiety regarding produc
    ```
    *(Server runs at http://127.0.0.1:8000)*
 
-### 3. Frontend Setup (The Beauty)
+### 3. Frontend Setup 
 1. Open a terminal in the `client/` folder.
 2. Install dependencies:
    ```bash
@@ -124,7 +124,7 @@ Mumzworld serves millions of parents who deal with high anxiety regarding produc
 
 ---
 
-## Tooling & AI Provenance (Mandatory Disclosure)
+## Tooling & AI Provenance
 As an AI-native engineer, this project was built using an **Agentic AI workflow**.
 
 - **AI Harness:** [Antigravity](https://github.com/google-deepmind/antigravity) (Google DeepMind)
