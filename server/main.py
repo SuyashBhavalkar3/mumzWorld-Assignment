@@ -11,7 +11,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from openai import OpenAI
 from dotenv import load_dotenv
 import json
-from schemas import AnalysisResponse, SafetyReport
+from schemas import AnalysisResponse, SafetyReport, ChatRequest, ChatResponse
 
 # Load environment variables (like OPENAI_API_KEY) from .env file
 load_dotenv()
@@ -103,6 +103,38 @@ async def analyze_product(file: UploadFile = File(...)):
 
     except Exception as e:
         return AnalysisResponse(success=False, data=None, error=str(e))
+
+@app.post("/chat", response_model=ChatResponse)
+async def chat_with_expert(request: ChatRequest):
+    """
+    Pediatric Expert Follow-up Chat.
+    Takes the previous safety report as context and answers parent's follow-up questions.
+    """
+    try:
+        # Build the conversation context
+        system_prompt = (
+            "You are a compassionate, expert pediatric advisor for Mumzworld. "
+            "You are answering follow-up questions from a parent about a product they just scanned. "
+            "Use the following Safety Report context to answer their questions accurately. "
+            "Respond in the same language the user is speaking (English or Arabic). "
+            f"Context: {request.reportContext.json()}"
+        )
+
+        messages = [{"role": "system", "content": system_prompt}]
+        for msg in request.messages:
+            messages.append({"role": msg.role, "content": msg.content})
+
+        response = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=messages,
+            max_tokens=300,
+        )
+
+        reply = response.choices[0].message.content
+        return ChatResponse(success=True, reply=reply, error=None)
+
+    except Exception as e:
+        return ChatResponse(success=False, reply=None, error=str(e))
 
 @app.get("/health")
 def health_check():

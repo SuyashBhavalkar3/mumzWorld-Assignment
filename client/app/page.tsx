@@ -14,7 +14,8 @@
 
 import { useState } from "react";
 import Header from "@/components/Header";
-import { Upload, ShieldCheck, AlertCircle, Info, Sparkles, CheckCircle2, Languages } from "lucide-react";
+import { Upload, ShieldCheck, AlertCircle, Info, Sparkles, CheckCircle2, Languages, Send, MessageSquare } from "lucide-react";
+
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function Home() {
@@ -24,6 +25,10 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null);
   const [lang, setLang] = useState<"en" | "ar">("en");
   const [loadingMsg, setLoadingMsg] = useState("Initializing AI...");
+  const [chatMessages, setChatMessages] = useState<{role: string, content: string}[]>([]);
+  const [chatInput, setChatInput] = useState("");
+  const [isChatting, setIsChatting] = useState(false);
+
 
   const t = {
     en: {
@@ -38,7 +43,10 @@ export default function Home() {
       expertVerdict: "EXPERT VERDICT",
       ingredientAnalysis: "INGREDIENT SAFETY ANALYSIS",
       switchLang: "SWITCH TO ARABIC",
-      aiAgent: "AI AGENT ACTIVE"
+      aiAgent: "AI AGENT ACTIVE",
+      chatTitle: "Ask a Pediatric Expert",
+      chatPlaceholder: "Is this safe for eczema? Ask here...",
+      send: "Send"
     },
     ar: {
       title: "إدخال المنتج",
@@ -52,9 +60,13 @@ export default function Home() {
       expertVerdict: "حكم الخبراء",
       ingredientAnalysis: "تحليل سلامة المكونات",
       switchLang: "التبديل إلى الإنجليزية",
-      aiAgent: "وكيل الذكاء الاصطناعي نشط"
+      aiAgent: "وكيل الذكاء الاصطناعي نشط",
+      chatTitle: "اسأل خبير طب الأطفال",
+      chatPlaceholder: "هل هذا آمن للأكزيما؟ اسأل هنا...",
+      send: "إرسال"
     }
   };
+
 
   const loadingSteps = {
     en: [
@@ -112,6 +124,37 @@ export default function Home() {
     } finally {
       clearInterval(interval);
       setLoading(false);
+    }
+  };
+
+  const handleSendMessage = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!chatInput.trim() || !result) return;
+
+    const newMessage = { role: "user", content: chatInput };
+    setChatMessages(prev => [...prev, newMessage]);
+    setChatInput("");
+    setIsChatting(true);
+
+    try {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
+      const response = await fetch(`${apiUrl}/chat`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          reportContext: result,
+          messages: [...chatMessages, newMessage]
+        }),
+      });
+
+      const data = await response.json();
+      if (data.success && data.reply) {
+        setChatMessages(prev => [...prev, { role: "assistant", content: data.reply }]);
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsChatting(false);
     }
   };
 
@@ -311,6 +354,63 @@ export default function Home() {
                         </div>
                       ))}
                     </div>
+                  </div>
+
+                  {/* Pediatric Expert Chat */}
+                  <div className="glass-card overflow-hidden shadow-2xl border-white mt-8">
+                    <div className="p-6 bg-gradient-to-r from-primary to-accent border-b border-white/20">
+                      <h3 className="font-black text-white flex items-center gap-2 tracking-tight">
+                        <MessageSquare size={20} />
+                        {t[lang].chatTitle}
+                      </h3>
+                    </div>
+                    
+                    <div className="p-6 space-y-4 max-h-[400px] overflow-y-auto bg-gray-50/50">
+                      {chatMessages.length === 0 && (
+                        <div className="text-center py-8">
+                          <p className="text-xs text-gray-400 font-bold uppercase tracking-widest opacity-50">
+                            {lang === 'en' ? 'Start a conversation' : 'ابدأ محادثة'}
+                          </p>
+                        </div>
+                      )}
+                      {chatMessages.map((msg, i) => (
+                        <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                          <div className={`max-w-[80%] rounded-2xl px-5 py-3 text-sm font-medium leading-relaxed ${
+                            msg.role === 'user' 
+                              ? 'bg-secondary text-white shadow-lg shadow-secondary/20 rounded-tr-sm' 
+                              : 'bg-white text-mumz-grey shadow-md border border-gray-100 rounded-tl-sm'
+                          } ${lang === 'ar' ? 'text-right dir-rtl' : ''}`}>
+                            {msg.content}
+                          </div>
+                        </div>
+                      ))}
+                      {isChatting && (
+                        <div className="flex justify-start">
+                          <div className="bg-white border border-gray-100 rounded-2xl rounded-tl-sm px-5 py-4 shadow-md flex gap-1">
+                            <div className="w-1.5 h-1.5 bg-primary rounded-full animate-bounce" />
+                            <div className="w-1.5 h-1.5 bg-primary rounded-full animate-bounce [animation-delay:-0.15s]" />
+                            <div className="w-1.5 h-1.5 bg-primary rounded-full animate-bounce [animation-delay:-0.3s]" />
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                    
+                    <form onSubmit={handleSendMessage} className="p-4 bg-white border-t border-gray-100 flex gap-3 items-center">
+                      <input
+                        type="text"
+                        value={chatInput}
+                        onChange={(e) => setChatInput(e.target.value)}
+                        placeholder={t[lang].chatPlaceholder}
+                        className={`flex-grow h-12 bg-gray-50 border-none rounded-xl px-5 focus:ring-2 focus:ring-primary/20 text-sm transition-all ${lang === 'ar' ? 'text-right' : ''}`}
+                      />
+                      <button 
+                        type="submit"
+                        disabled={!chatInput.trim() || isChatting}
+                        className="h-12 w-12 bg-primary text-white rounded-xl flex items-center justify-center hover:bg-primary/90 transition-all disabled:opacity-50 shrink-0 shadow-lg shadow-primary/20 hover:-translate-y-0.5 active:translate-y-0"
+                      >
+                        <Send size={18} className={lang === 'ar' ? 'rotate-180' : ''} />
+                      </button>
+                    </form>
                   </div>
                 </motion.div>
                 ) : null}

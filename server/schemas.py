@@ -24,3 +24,16 @@ class AnalysisResponse(BaseModel):
     success: bool
     data: Optional[SafetyReport]
     error: Optional[str]
+
+class ChatMessage(BaseModel):
+    role: str
+    content: str
+
+class ChatRequest(BaseModel):
+    reportContext: SafetyReport
+    messages: List[ChatMessage]
+
+class ChatResponse(BaseModel):
+    success: bool
+    reply: Optional[str]
+    error: Optional[str]
