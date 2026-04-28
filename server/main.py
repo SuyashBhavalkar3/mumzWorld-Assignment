@@ -125,7 +125,7 @@ async def chat_with_expert(request: ChatRequest):
             messages.append({"role": msg.role, "content": msg.content})
 
         response = client.chat.completions.create(
-            model="gpt-4o-mini",
+            model="gpt-3.5-turbo",
             messages=messages,
             max_tokens=300,
         )
