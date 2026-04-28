@@ -3,7 +3,7 @@
 ### 📋 Submission Details (Track A: AI Engineering Intern)
 - **Summary:** Mumz-Shield is an AI-powered safety sentinel for Mumzworld parents. It uses multimodal AI (GPT-4o-mini) to instantly audit baby product ingredients from a photo, providing bilingual (EN/AR) safety verdicts. It features a persistent SHA-256 hashing cache for speed, a "Safe-Swap" revenue engine for recommendations, and SSE token streaming for a premium chat experience.
 - **Prototype Access:** [GitHub Repository](https://github.com/SuyashBhavalkar3/mumzWorld-Assignment)
-- **Loom Walkthrough:** pending to insert link
+- **Loom Walkthrough:** [Loom](https://www.loom.com/share/5880f1d4b3784b38bcc38a7cf91123a0)
 - **Deliverables:** [EVALS.md](./EVALS.md) | [TRADEOFFS.md](./TRADEOFFS.md)
 - **AI Usage Note:** Built with **Antigravity** (harness) + **Gemini 1.5 Pro** & **GPT-4o-mini**. Workflow: Agentic loops for UI/Persistence, pair-coding for business logic (Safe-Swap), and manual steerage for bilingual layout integrity.
 - **Time Log:** Total: ~5 Hours. Phase 1 (Discovery): 45m | Phase 2 (AI/Backend): 1.5h | Phase 3 (Frontend/Streaming): 1.5h | Phase 4 (Polish/Evals): 1h.
