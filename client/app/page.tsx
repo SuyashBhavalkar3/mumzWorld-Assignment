@@ -6,9 +6,10 @@
 //
 // KEY FEATURES:
 // 1. Bilingual Support (English/Arabic)
-// 2. Real-time AI processing logs
-// 3. Dynamic layout (Centered -> Split)
-// 4. Sticky Sidebar for easy access
+// 2. Real-time AI processing logs (Vision Engine)
+// 3. Persistent SHA-256 Hashing Cache (SQLAlchemy)
+// 4. Real-time Token Streaming Chat (SSE)
+// 5. Safe-Swap Revenue Integration
 
 "use client";
 
@@ -160,6 +161,10 @@ export default function Home() {
       const decoder = new TextDecoder();
       let assistantReply = "";
 
+      // ---------------------------------------------------------
+      // SSE STREAM DECODER: Reads tokens from backend iteratively.
+      // This enables the "Real-time Typing" effect in the UI.
+      // ---------------------------------------------------------
       while (true) {
         const { value, done } = await reader.read();
         if (done) break;
