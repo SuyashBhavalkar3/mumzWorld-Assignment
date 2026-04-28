@@ -405,7 +405,12 @@ export default function Home() {
                             className="glass-card overflow-hidden border-white shadow-xl flex flex-col h-full group"
                           >
                             <div className="relative aspect-square overflow-hidden bg-white p-6">
-                              <img src={rec.image_url} alt={rec.name} className="w-full h-full object-contain mix-blend-multiply group-hover:scale-110 transition-transform duration-500" />
+                              <img 
+                                src={rec.image_url} 
+                                alt={rec.name} 
+                                referrerPolicy="no-referrer"
+                                className="w-full h-full object-contain mix-blend-multiply group-hover:scale-110 transition-transform duration-500" 
+                              />
                               <div className="absolute top-4 right-4 bg-accent text-[8px] font-black px-2 py-1 rounded-full text-mumz-grey shadow-sm">
                                 {rec.price}
                               </div>
