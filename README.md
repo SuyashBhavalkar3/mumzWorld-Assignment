@@ -15,7 +15,7 @@
 
 ---
 
-## v2.0 Power-Ups (Top 0.001% Engineering)
+## v2.0 Power-Ups
 **The project has been upgraded beyond the initial requirements to showcase senior-level AI Engineering practices:**
 1. **Persistent SHA-256 Hashing Cache:** Built with SQLAlchemy, the backend identifies redundant image scans in <10ms using a persistent hash database.
 2. **"Safe-Swap" Revenue Engine:** Automatically injects official safe alternatives if a product is flagged as unsafe.
