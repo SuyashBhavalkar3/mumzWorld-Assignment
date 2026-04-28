@@ -8,7 +8,7 @@
 import os
 import base64
 from fastapi import FastAPI, UploadFile, File, HTTPException
-from fastapi.responses import StreamingResponse
+from fastapi.responses import StreamingResponse, JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from openai import OpenAI
 from dotenv import load_dotenv
@@ -59,6 +59,16 @@ def set_cached_result(image_hash, data):
 load_dotenv()
 
 app = FastAPI(title="Mumz-Shield Safety API")
+
+# ---------------------------------------------------------
+# GLOBAL ERROR HANDLING: Ensuring professional JSON outputs
+# ---------------------------------------------------------
+@app.exception_handler(Exception)
+async def global_exception_handler(request, exc):
+    return JSONResponse(
+        status_code=500,
+        content={"success": False, "error": "An internal safety sentinel error occurred. Please try again."},
+    )
 
 @app.get("/")
 def read_root():

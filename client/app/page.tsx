@@ -261,6 +261,7 @@ export default function Home() {
 
                 <button 
                   disabled={!file || loading}
+                  aria-label={t[lang].button}
                   className="w-full h-12 bg-primary text-white rounded-xl font-bold text-sm shadow-xl shadow-primary/20 hover:translate-y-[-2px] active:translate-y-[0px] transition-all disabled:opacity-50"
                 >
                   {loading ? t[lang].scanning : t[lang].button}
