@@ -18,6 +18,24 @@ load_dotenv()
 
 app = FastAPI(title="Mumz-Shield Safety API")
 
+@app.get("/")
+def read_root():
+    """
+    Root endpoint so users don't see a 'Not Found' error.
+    Provides basic app details.
+    """
+    return {
+        "app_name": "Mumz-Shield Safety API",
+        "description": "AI-powered product safety analysis for Mumzworld.",
+        "version": "1.0.0",
+        "endpoints": {
+            "docs": "/docs (Swagger UI)",
+            "health": "/health",
+            "analyze": "/analyze",
+            "chat": "/chat"
+        }
+    }
+
 # ---------------------------------------------------------
 # CORS SETTINGS: Trusting our specific frontend URLs
 # ---------------------------------------------------------
