@@ -166,7 +166,7 @@ async def analyze_product(file: UploadFile = File(...)):
                 {
                     "name": "Mustela Gentle Cleansing Gel",
                     "brand": "Mustela",
-                    "image_url": "https://www.mumzworld.com/media/catalog/product/m/u/mus-8703299-mustela-gentle-cleansing-gel-500ml-1.jpg",
+                    "image_url": "https://s3-pwa-prod.mumzworld.com/media/cGF0aD0lMkZtZWRpYSUyRmNhdGFsb2clMkZwcm9kdWN0JTJGQVNLLTg3MDI4MzktMi5qcGcmZml0PWNvdmVyJndpZHRoPTY0MA/Mustela%20Gentle%20Cleansing%20Gel%20-%20500ml.webp",
                     "product_url": "https://www.mumzworld.com/en/mustela-gentle-cleansing-gel-500ml",
                     "price": "AED 65.00",
                     "reason": "Dermatologically tested, Soap-free, and contains 93% natural ingredients."
@@ -174,8 +174,8 @@ async def analyze_product(file: UploadFile = File(...)):
                 {
                     "name": "Sebamed Baby Gentle Wash",
                     "brand": "Sebamed",
-                    "image_url": "https://www.mumzworld.com/media/catalog/product/s/e/seb-4013032128343-sebamed-baby-gentle-wash-200ml-1.jpg",
-                    "product_url": "https://www.mumzworld.com/en/sebamed-baby-gentle-wash-200ml",
+                    "image_url": "https://s3-pwa-prod.mumzworld.com/media/cGF0aD0lMkZtZWRpYSUyRmNhdGFsb2clMkZwcm9kdWN0JTJGYyUyRnAlMkZjcGMtNDEwMzA0MDAyNjk4OS1zZWJhbWVkLWJhYnktZ2VudGxlLXdhc2gtd2l0aC1jYWxlbmR1bGEtMjAwbWwtMTU1NjIxMTk4OS5qcGcmZml0PWNvdmVyJndpZHRoPTY0MA/Sebamed%20-%20Baby%20Gentle%20Wash%20with%20Calendula%20200ml.webp",
+                    "product_url": "https://www.mumzworld.com/en/sebamed-baby-gentle-wash-with-calendula-200ml?source=Smart+404+page",
                     "price": "AED 42.50",
                     "reason": "pH 5.5 helps develop the skin's acid protection mantle."
                 }

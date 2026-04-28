@@ -390,12 +390,11 @@ export default function Home() {
                     </div>
                   </div>
 
-                  {/* Safe-Swap Recommendations */}
                   {result.recommendations && result.recommendations.length > 0 && (
-                    <div className="space-y-4">
+                    <div className="space-y-6 mt-12 mb-12">
                       <div className={`px-4 ${lang === 'ar' ? 'text-right' : ''}`}>
-                        <h3 className="text-sm font-black text-primary tracking-widest uppercase">{t[lang].safeSwapTitle}</h3>
-                        <p className="text-[10px] font-bold text-gray-400 mt-1">{t[lang].safeSwapSubtitle}</p>
+                        <h3 className="text-sm font-black text-white tracking-widest uppercase drop-shadow-md">{t[lang].safeSwapTitle}</h3>
+                        <p className="text-[11px] font-bold text-white/70 mt-1">{t[lang].safeSwapSubtitle}</p>
                       </div>
                       
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
