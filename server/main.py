@@ -11,7 +11,47 @@ from fastapi.middleware.cors import CORSMiddleware
 from openai import OpenAI
 from dotenv import load_dotenv
 import json
+import hashlib
+from sqlalchemy import Column, String, Text, create_engine
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
 from schemas import AnalysisResponse, SafetyReport, ChatRequest, ChatResponse
+
+# --- DATABASE SETUP (SQLAlchemy) ---
+# Supports Local SQLite and External Postgres (Render)
+DATABASE_URL = os.getenv("DATABASE_URL")
+if DATABASE_URL and DATABASE_URL.startswith("postgres://"):
+    DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
+if not DATABASE_URL:
+    DATABASE_URL = "sqlite:///./cache.db"
+
+engine = create_engine(DATABASE_URL)
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+Base = declarative_base()
+
+class ProductCache(Base):
+    __tablename__ = "product_cache"
+    image_hash = Column(String, primary_key=True, index=True)
+    analysis_data = Column(Text)
+
+Base.metadata.create_all(bind=engine)
+
+def get_cached_result(image_hash):
+    db = SessionLocal()
+    try:
+        cached = db.query(ProductCache).filter(ProductCache.image_hash == image_hash).first()
+        return json.loads(cached.analysis_data) if cached else None
+    finally:
+        db.close()
+
+def set_cached_result(image_hash, data):
+    db = SessionLocal()
+    try:
+        new_cache = ProductCache(image_hash=image_hash, analysis_data=json.dumps(data))
+        db.merge(new_cache) # Merges if exists, otherwise inserts
+        db.commit()
+    finally:
+        db.close()
 
 # Load environment variables (like OPENAI_API_KEY) from .env file
 load_dotenv()
@@ -65,8 +105,18 @@ async def analyze_product(file: UploadFile = File(...)):
     4. Validates the output against our SafetyReport schema.
     """
     try:
-        # Step 1: Process the image file
+        # Step 1: Process and Hash the image file
         contents = await file.read()
+        image_hash = hashlib.sha256(contents).hexdigest()
+        
+        # Step 1.5: Check Persistent Cache
+        cached_data = get_cached_result(image_hash)
+        if cached_data:
+            print(f"⚡ PERSISTENT CACHE HIT: Returning saved result for {image_hash[:8]}...")
+            analysis = SafetyReport(**cached_data)
+            return AnalysisResponse(success=True, data=analysis, error=None)
+
+        print(f"☁️ CACHE MISS: Calling OpenAI Vision for {image_hash[:8]}...")
         base64_image = encode_image(contents)
 
         # Step 2: Request Analysis from OpenAI
@@ -117,6 +167,9 @@ async def analyze_product(file: UploadFile = File(...)):
                 error="This product is outside our safety audit scope. Please upload a baby-related consumable or skin-care item."
             )
 
+        # Store in persistent cache
+        set_cached_result(image_hash, data)
+        
         return AnalysisResponse(success=True, data=analysis, error=None)
 
     except Exception as e:
