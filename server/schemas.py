@@ -8,6 +8,14 @@ class Ingredient(BaseModel):
     reason_en: str
     reason_ar: str
 
+class Recommendation(BaseModel):
+    name: str
+    brand: str
+    image_url: str
+    product_url: str
+    price: str
+    reason: str
+
 class SafetyReport(BaseModel):
     product_name_en: Optional[str]
     product_name_ar: Optional[str]
@@ -19,6 +27,7 @@ class SafetyReport(BaseModel):
     trust_badges: List[str] = Field(description="e.g., 'Paraben-Free', 'Halal', 'Dermatologically Tested'")
     is_in_scope: bool = Field(description="True if it's a baby-related product (food, skin-care, etc.), False otherwise")
     confidence_score: float = Field(ge=0, le=1, description="AI confidence in the extraction")
+    recommendations: List[Recommendation] = []
 
 class AnalysisResponse(BaseModel):
     success: bool

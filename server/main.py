@@ -7,6 +7,7 @@
 import os
 import base64
 from fastapi import FastAPI, UploadFile, File, HTTPException
+from fastapi.responses import StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
 from openai import OpenAI
 from dotenv import load_dotenv
@@ -158,6 +159,30 @@ async def analyze_product(file: UploadFile = File(...)):
         
         # We use manual validation here because Pydantic v2 has binary issues on some Windows setups.
         # This approach (Pydantic v1) is the most robust for local distribution.
+        
+        # Step 3.5: Inject Safe-Swap Recommendations if score is low
+        if data.get("safety_score", 10) <= 7:
+            data["recommendations"] = [
+                {
+                    "name": "Mustela Gentle Cleansing Gel",
+                    "brand": "Mustela",
+                    "image_url": "https://www.mumzworld.com/media/catalog/product/m/u/mus-8703299-mustela-gentle-cleansing-gel-500ml-1.jpg",
+                    "product_url": "https://www.mumzworld.com/en/mustela-gentle-cleansing-gel-500ml",
+                    "price": "AED 65.00",
+                    "reason": "Dermatologically tested, Soap-free, and contains 93% natural ingredients."
+                },
+                {
+                    "name": "Sebamed Baby Gentle Wash",
+                    "brand": "Sebamed",
+                    "image_url": "https://www.mumzworld.com/media/catalog/product/s/e/seb-4013032128343-sebamed-baby-gentle-wash-200ml-1.jpg",
+                    "product_url": "https://www.mumzworld.com/en/sebamed-baby-gentle-wash-200ml",
+                    "price": "AED 42.50",
+                    "reason": "pH 5.5 helps develop the skin's acid protection mantle."
+                }
+            ]
+        else:
+            data["recommendations"] = []
+
         analysis = SafetyReport(**data)
         
         if not analysis.is_in_scope:
@@ -175,14 +200,12 @@ async def analyze_product(file: UploadFile = File(...)):
     except Exception as e:
         return AnalysisResponse(success=False, data=None, error=str(e))
 
-@app.post("/chat", response_model=ChatResponse)
+@app.post("/chat")
 async def chat_with_expert(request: ChatRequest):
     """
-    Pediatric Expert Follow-up Chat.
-    Takes the previous safety report as context and answers parent's follow-up questions.
+    Pediatric Expert Follow-up Chat with REAL-TIME STREAMING.
     """
     try:
-        # Build the conversation context
         system_prompt = (
             "You are a compassionate, expert pediatric advisor for Mumzworld. "
             "You are answering follow-up questions from a parent about a product they just scanned. "
@@ -195,17 +218,22 @@ async def chat_with_expert(request: ChatRequest):
         for msg in request.messages:
             messages.append({"role": msg.role, "content": msg.content})
 
-        response = client.chat.completions.create(
-            model="gpt-3.5-turbo",
-            messages=messages,
-            max_tokens=300,
-        )
+        def generate():
+            response = client.chat.completions.create(
+                model="gpt-3.5-turbo",
+                messages=messages,
+                max_tokens=300,
+                stream=True
+            )
+            for chunk in response:
+                if chunk.choices[0].delta.content:
+                    yield f"data: {chunk.choices[0].delta.content}\n\n"
+            yield "data: [DONE]\n\n"
 
-        reply = response.choices[0].message.content
-        return ChatResponse(success=True, reply=reply, error=None)
+        return StreamingResponse(generate(), media_type="text/event-stream")
 
     except Exception as e:
-        return ChatResponse(success=False, reply=None, error=str(e))
+        return {"success": False, "error": str(e)}
 
 @app.get("/health")
 def health_check():

@@ -46,7 +46,9 @@ export default function Home() {
       aiAgent: "AI AGENT ACTIVE",
       chatTitle: "Ask a Pediatric Expert",
       chatPlaceholder: "Is this safe for eczema? Ask here...",
-      send: "Send"
+      send: "Send",
+      safeSwapTitle: "MUMZ-SHIELD SAFE SWAP",
+      safeSwapSubtitle: "Expert-verified safe alternatives from our catalog"
     },
     ar: {
       title: "إدخال المنتج",
@@ -63,7 +65,9 @@ export default function Home() {
       aiAgent: "وكيل الذكاء الاصطناعي نشط",
       chatTitle: "اسأل خبير طب الأطفال",
       chatPlaceholder: "هل هذا آمن للأكزيما؟ اسأل هنا...",
-      send: "إرسال"
+      send: "إرسال",
+      safeSwapTitle: "تبديل آمن من درع الذكاء الاصطناعي",
+      safeSwapSubtitle: "بدائل آمنة معتمدة من قبل الخبراء من كتالوجنا"
     }
   };
 
@@ -131,10 +135,14 @@ export default function Home() {
     e.preventDefault();
     if (!chatInput.trim() || !result) return;
 
-    const newMessage = { role: "user", content: chatInput };
-    setChatMessages(prev => [...prev, newMessage]);
+    const userMessage = { role: "user", content: chatInput };
+    setChatMessages(prev => [...prev, userMessage]);
     setChatInput("");
     setIsChatting(true);
+
+    // Add a placeholder for the assistant's response
+    const assistantMessageIndex = chatMessages.length + 1;
+    setChatMessages(prev => [...prev, { role: "assistant", content: "" }]);
 
     try {
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
@@ -143,16 +151,42 @@ export default function Home() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           reportContext: result,
-          messages: [...chatMessages, newMessage]
+          messages: [...chatMessages, userMessage]
         }),
       });
 
-      const data = await response.json();
-      if (data.success && data.reply) {
-        setChatMessages(prev => [...prev, { role: "assistant", content: data.reply }]);
+      if (!response.body) return;
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let assistantReply = "";
+
+      while (true) {
+        const { value, done } = await reader.read();
+        if (done) break;
+
+        const chunk = decoder.decode(value);
+        const lines = chunk.split("\n");
+
+        for (const line of lines) {
+          if (line.startsWith("data: ")) {
+            const content = line.replace("data: ", "");
+            if (content === "[DONE]") break;
+            
+            assistantReply += content;
+            // Update the last message in the chat history
+            setChatMessages(prev => {
+              const newMessages = [...prev];
+              newMessages[newMessages.length - 1] = { 
+                role: "assistant", 
+                content: assistantReply 
+              };
+              return newMessages;
+            });
+          }
+        }
       }
     } catch (err) {
-      console.error(err);
+      console.error("Streaming error:", err);
     } finally {
       setIsChatting(false);
     }
@@ -355,6 +389,50 @@ export default function Home() {
                       ))}
                     </div>
                   </div>
+
+                  {/* Safe-Swap Recommendations */}
+                  {result.recommendations && result.recommendations.length > 0 && (
+                    <div className="space-y-4">
+                      <div className={`px-4 ${lang === 'ar' ? 'text-right' : ''}`}>
+                        <h3 className="text-sm font-black text-primary tracking-widest uppercase">{t[lang].safeSwapTitle}</h3>
+                        <p className="text-[10px] font-bold text-gray-400 mt-1">{t[lang].safeSwapSubtitle}</p>
+                      </div>
+                      
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {result.recommendations.map((rec: any, i: number) => (
+                          <motion.div 
+                            key={i}
+                            whileHover={{ y: -5 }}
+                            className="glass-card overflow-hidden border-white shadow-xl flex flex-col h-full group"
+                          >
+                            <div className="relative aspect-square overflow-hidden bg-white p-6">
+                              <img src={rec.image_url} alt={rec.name} className="w-full h-full object-contain mix-blend-multiply group-hover:scale-110 transition-transform duration-500" />
+                              <div className="absolute top-4 right-4 bg-accent text-[8px] font-black px-2 py-1 rounded-full text-mumz-grey shadow-sm">
+                                {rec.price}
+                              </div>
+                            </div>
+                            
+                            <div className="p-5 flex-grow flex flex-col">
+                              <span className="text-[9px] font-black text-secondary tracking-widest uppercase mb-1">{rec.brand}</span>
+                              <h4 className="text-xs font-black text-mumz-grey mb-2 line-clamp-2">{rec.name}</h4>
+                              <p className="text-[10px] text-gray-400 font-medium leading-relaxed mb-4 flex-grow italic">
+                                "{rec.reason}"
+                              </p>
+                              
+                              <a 
+                                href={rec.product_url} 
+                                target="_blank" 
+                                rel="noopener noreferrer"
+                                className="w-full h-10 bg-gray-50 text-primary border border-gray-100 rounded-lg flex items-center justify-center gap-2 text-[10px] font-black hover:bg-primary hover:text-white transition-all uppercase tracking-widest"
+                              >
+                                View on Mumzworld
+                              </a>
+                            </div>
+                          </motion.div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
 
                   {/* Pediatric Expert Chat */}
                   <div className="glass-card overflow-hidden shadow-2xl border-white mt-8">
