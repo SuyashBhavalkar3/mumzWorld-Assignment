@@ -222,10 +222,10 @@ export default function Home() {
       </section>
 
       <div className="max-w-6xl mx-auto px-4 -mt-12 relative z-10">
-        <div className={`grid grid-cols-1 gap-8 items-start transition-all duration-700 ${result || loading ? 'lg:grid-cols-12' : 'max-w-3xl mx-auto'}`}>
+        <div className={`grid grid-cols-1 gap-8 items-start transition-all duration-700 ${(result || error || loading) ? 'lg:grid-cols-12' : 'max-w-xl mx-auto'}`}>
           
-          {/* Upload Sidebar - Centered if no results */}
-          <div className={`${result || loading ? 'lg:col-span-4 lg:sticky lg:top-24' : 'w-full'}`}>
+          {/* Left Side: Product Ingestion (Audit Sidebar) */}
+          <div className={`${(result || error || loading) ? 'lg:col-span-4 lg:sticky lg:top-24' : 'w-full'}`}>
             <div className="glass-card p-6 border-white/40 shadow-2xl">
               <h3 className="font-black text-primary mb-4 flex items-center gap-2 text-sm tracking-tight">
                 <Upload size={18} />
@@ -278,7 +278,7 @@ export default function Home() {
 
           {/* Results Main Area */}
           {(loading || result || error) && (
-            <div className="lg:col-span-8 min-h-[600px]">
+            <div className="lg:col-span-8">
             <AnimatePresence mode="wait">
               {loading ? (
                 <motion.div 
@@ -304,18 +304,20 @@ export default function Home() {
               ) : error ? (
                 <motion.div 
                   key="error"
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  className="glass-card p-12 flex flex-col items-center justify-center text-center h-full min-h-[500px]"
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  className="glass-card p-10 text-center shadow-2xl border-white"
                 >
-                  <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-6">
-                    <AlertCircle size={32} className="text-primary" />
+                  <div className="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner border border-red-100">
+                    <span className="text-red-500 text-2xl">⚠️</span>
                   </div>
-                  <h3 className="font-black text-xl text-mumz-grey mb-2 uppercase tracking-tighter">{t[lang].errorTitle}</h3>
-                  <p className="text-sm font-bold text-gray-400 max-w-xs">{error}</p>
+                  <h2 className="text-lg font-black text-mumz-grey tracking-tight mb-2 uppercase">{t[lang].errorTitle}</h2>
+                  <p className="text-xs text-gray-500 font-bold leading-relaxed mb-8 px-4">
+                    {error}
+                  </p>
                   <button 
-                    onClick={() => setError(null)}
-                    className="mt-6 text-[10px] font-black text-primary uppercase tracking-widest hover:underline"
+                    onClick={() => { setError(null); setFile(null); }}
+                    className="w-full h-11 bg-primary text-white rounded-xl font-black text-[10px] tracking-widest uppercase hover:bg-secondary transition-all shadow-lg hover:shadow-primary/20"
                   >
                     {t[lang].tryAgain}
                   </button>
